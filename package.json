@@ -1,0 +1,25 @@
+{
+  "name": "is-ts",
+  "version": "1.0.0",
+  "description": "typescript guard tools",
+  "main": "lib/index.cjs.js",
+  "module": "lib/index.js",
+  "author": "padreramnt",
+  "license": "MIT",
+  "scripts": {
+    "start:tsc": "tsc",
+    "start:rollup": "rollup",
+    "prepublishOnly": "rm -rf ./lib&&tsc -p tsconfig.json&&rollup -c"
+  },
+  "devDependencies": {
+    "rollup": "^1.14.6",
+    "rollup-plugin-typescript": "^1.0.1",
+    "typescript": "^3.5.1"
+  },
+  "dependencies": {
+    "tslib": "^1.9.3"
+  },
+  "files": [
+    "lib/**"
+  ]
+}
