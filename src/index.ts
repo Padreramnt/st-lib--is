@@ -5,8 +5,18 @@ const hasIteratorFunction = has(Symbol.iterator, isFunction);
 const hasAsyncIteratorFunction = has(Symbol.asyncIterator, isFunction);
 const hasLengthNumber = has('length', isNumber);
 
+
+export function isProperty(it: unknown, key: unknown) {
+  return isKey(key) && (
+    (typeof it === 'object' && null != it && key in it)
+    || (null != it && Object.prototype.hasOwnProperty.call(it, key))
+  );
+}
+
 export function has<K extends string | number | symbol, T = unknown>(key: K, is?: Is<T>) {
-  return (it: unknown): it is Record<K, T> => isObject(it) && Reflect.has(it, key) && ((typeof is !== 'function') || is(Reflect.get(it, key)));
+  return (it: any): it is Record<K, T> => {
+    return isProperty(it, key) && ((typeof is !== 'function') || is(it[key]));
+  };
 };
 export function isNull(it: unknown): it is null {
   return it === null;
@@ -54,7 +64,7 @@ export function isWeakSet<K extends object = object>(it: unknown): it is WeakSet
   return it instanceof WeakSet;
 }
 export function isDefined<T>(it: T | null | undefined): it is T {
-  return null != it;
+  return typeof it === 'number' ? !isNaN(it) : null != it;
 }
 export function isDate(it: unknown): it is Date {
   return it instanceof Date && !isNaN(+it);
@@ -100,8 +110,8 @@ export const isKey = ifAny([isString, isNumber, isSymbol]);
 export function isOneOf<T>(input: T[]) {
   return (it: any): it is T => input.includes(it);
 };
-export function isKeyOf<T extends object>(input: T) {
-  return (it: unknown): it is keyof T => isKey(it) && Reflect.has(input, it);
+export function isKeyOf<T>(input: T) {
+  return (it: any): it is keyof T => (typeof input === 'object' && it in input) || null != it && Object.prototype.hasOwnProperty.call(input, it);
 };
 export function isInstanceOf<T>(input: new (...args: any[]) => T) {
   return (it: unknown): it is T => it instanceof input;

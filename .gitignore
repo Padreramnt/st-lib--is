@@ -1,3 +1,8 @@
+# Output
+lib
+temp
+dist
+
 # Logs
 logs
 *.log

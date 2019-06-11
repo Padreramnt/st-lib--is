@@ -9,7 +9,9 @@
   "scripts": {
     "start:tsc": "tsc",
     "start:rollup": "rollup",
-    "prepublishOnly": "rm -rf ./lib&&tsc -p tsconfig.json&&rollup -c"
+    "pretest": "rm -rf ./temp&&tsc -p ./tsconfig.json --outDir ./temp --module commonjs",
+    "test": "node ./temp/index.test.js",
+    "prepublishOnly": "rm -rf ./lib&&tsc -p prod.tsconfig.json&&rollup -c"
   },
   "devDependencies": {
     "rollup": "^1.14.6",
