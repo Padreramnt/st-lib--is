@@ -129,7 +129,7 @@ export function isLike<T extends Record<PropertyKey, any>>(shape: Shape<T>) {
   const conditions: ((input: any) => any)[] = [];
   for (const key of Reflect.ownKeys(shape)) {
     const is = Reflect.get(shape, key);
-    if (isFunction(is)) { conditions.push(is) }
+    if (isFunction(is)) { conditions.push(it => isProperty(it, key) && is(it[key])) }
     else throw new TypeError(`guard ${String(key)} must be a function, got ${typeof is}`);
   }
   return (it: unknown): it is Pick<T, keyof T> => isObject(it) && conditions.every(is => is(it));
