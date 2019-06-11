@@ -63,16 +63,22 @@ export function isSet<K = any>(it: unknown): it is Set<K> {
 export function isWeakSet<K extends object = object>(it: unknown): it is WeakSet<K> {
   return it instanceof WeakSet;
 }
+/**
+ * is it defined
+ * @note NaN and Invalid Date is undefined
+ */
 export function isDefined<T>(it: T | null | undefined): it is T {
-  return typeof it === 'number' ? !isNaN(it) : null != it;
+  return typeof it === 'number' || it instanceof Date ? !isNaN(+it) : null != it;
 }
+/**
+ * @note Invalid Date is NOT a Date
+ */
 export function isDate(it: unknown): it is Date {
   return it instanceof Date && !isNaN(+it);
 }
 export function isRegExp(it: unknown): it is RegExp {
   return it instanceof RegExp;
 }
-
 export function isArray<T = any>(it: unknown): it is T[] {
   return Array.isArray(it);
 }
@@ -111,7 +117,7 @@ export function isOneOf<T>(input: T[]) {
   return (it: any): it is T => input.includes(it);
 };
 export function isKeyOf<T>(input: T) {
-  return (it: any): it is keyof T => (typeof input === 'object' && it in input) || null != it && Object.prototype.hasOwnProperty.call(input, it);
+  return (it: any): it is keyof T => isProperty(input, it);
 };
 export function isInstanceOf<T>(input: new (...args: any[]) => T) {
   return (it: unknown): it is T => it instanceof input;
@@ -119,8 +125,16 @@ export function isInstanceOf<T>(input: new (...args: any[]) => T) {
 export function isArrayOf<T>(is: (it: unknown) => it is T) {
   return (it: unknown): it is T[] => isArray(it) && it.every(is);
 };
+/**
+ * 
+ * @param is guard function
+ * @note objects witout any keys is Record<any, never>; Array<string> is a Record<any, string>
+ */
 export function isRecordOf<T>(is: (it: unknown) => it is T) {
-  return (it: unknown): it is Record<string | number | symbol, T> => isObject(it) && Object.values(it).every(is);
+  return (it: unknown): it is Record<string | number | symbol, T> => {
+    const values = isObject(it) ? Object.values(it) : [];
+    return values.length > 0 && values.every(is);
+  };
 };
 export type Shape<T extends Record<PropertyKey, any>> = {
   [K in keyof T]-?: Is<T[K]>
