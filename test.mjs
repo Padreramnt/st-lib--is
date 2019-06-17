@@ -1,4 +1,4 @@
-const {
+import {
   isObject,
   isNumber,
   isString,
@@ -22,8 +22,8 @@ const {
   isInstanceOf,
   isOneOf,
   isArrayOf,
-  isRecordOf,
-} = require('./lib');
+  isRecordOf
+} from './lib/index.mjs';
 
 function test(type, guard, variables, expectedValues) {
   return Object.entries(variables).map(([name, value]) => {

@@ -10,7 +10,7 @@ export default [
         sourcemap: true,
       },
       {
-        file: './lib/index.jsm',
+        file: './lib/index.mjs',
         format: 'es',
         sourcemap: true,
       }
