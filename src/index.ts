@@ -113,14 +113,19 @@ export function ifAll(input: Is<any>[]) {
 };
 
 export const isKey = ifAny([isString, isNumber, isSymbol]);
-export function isOneOf<T>(input: T[]) {
-  return (it: any): it is T => input.includes(it);
+
+export function isEqualTo<T>(it: T) {
+  return (that: unknown): that is T => that === it;
+}
+
+export function isOneOf<T>(them: T[]) {
+  return (that: any): that is T => them.includes(that);
 };
-export function isKeyOf<T>(input: T) {
-  return (it: any): it is keyof T => isProperty(input, it);
+export function isKeyOf<T>(it: T) {
+  return (that: any): that is keyof T => isProperty(it, that);
 };
-export function isInstanceOf<T>(input: new (...args: any[]) => T) {
-  return (it: unknown): it is T => it instanceof input;
+export function isInstanceOf<T>(it: new (...args: any[]) => T) {
+  return (that: unknown): that is T => that instanceof it;
 };
 export function isArrayOf<T>(is: (it: unknown) => it is T) {
   return (it: unknown): it is T[] => isArray(it) && it.every(is);
@@ -136,9 +141,11 @@ export function isRecordOf<T>(is: (it: unknown) => it is T) {
     return values.length > 0 && values.every(is);
   };
 };
+
 export type Shape<T extends Record<PropertyKey, any>> = {
   [K in keyof T]-?: Is<T[K]>
 }
+
 export function isLike<T extends Record<PropertyKey, any>>(shape: Shape<T>) {
   const conditions: ((input: any) => any)[] = [];
   for (const key of Reflect.ownKeys(shape)) {

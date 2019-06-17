@@ -1,4 +1,4 @@
-import {
+const {
   isObject,
   isNumber,
   isString,
@@ -23,8 +23,18 @@ import {
   isOneOf,
   isArrayOf,
   isRecordOf,
-} from './index';
-import test from './test';
+} = require('./lib');
+
+function test(type, guard, variables, expectedValues) {
+  return Object.entries(variables).map(([name, value]) => {
+    const expected = expectedValues.includes(name);
+    return {
+      result: guard(value),
+      expected,
+      message: `${name} ${expected ? 'is' : 'is not'} ${type}`,
+    }
+  })
+}
 
 class A {
   a = 0;
@@ -38,23 +48,23 @@ class B extends A {
 }
 
 
-const duckAObject: A = {
+const duckAObject = {
   a: 0,
   method() { },
 }
 
-const duckBObject: B = {
+const duckBObject = {
   a: 0,
   b: 0,
   method() { },
 }
 
-const isLikeA = isLike<A>({
+const isLikeA = isLike({
   a: isNumber,
   method: isFunction,
 });
 
-const isLikeB = isLike<B>({
+const isLikeB = isLike({
   a: isNumber,
   method: isFunction,
   b: isNumber,
@@ -218,7 +228,7 @@ const tests = [
   ...test('record of strings', isRecordOfStrings, values, ['recordOfStrings']),
 ]
 
-function print(test: { result: any, expected: any, message: string }, pass: string = 'pass', fail: string = 'fail') {
+function print(test, pass = 'pass', fail = 'fail') {
   if (test.result === test.expected) {
     console.log(`%s (\x1b[32m%s\x1b[0m)`, test.message, pass);
   } else {
