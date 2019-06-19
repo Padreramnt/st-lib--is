@@ -1,10 +1,11 @@
 export type Is<T> = (it: unknown) => it is T;
 
 const base64 = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/;
+const number = /^[+-]?\d+(?:\.\d+)?(?:e[+-]?\d+)?$/;
+const hex = /^[\dabcdef]+$/i;
 const hasIteratorFunction = has(Symbol.iterator, isFunction);
 const hasAsyncIteratorFunction = has(Symbol.asyncIterator, isFunction);
 const hasLengthNumber = has('length', isNumber);
-
 
 export function isProperty(it: unknown, key: unknown) {
   return isKey(key) && (
@@ -39,7 +40,13 @@ export function isObject(it: unknown): it is object {
 export function isString(it: unknown): it is string {
   return typeof it === 'string';
 }
-export function isBase64(it: unknown): it is string {
+export function isNumberString(it: unknown): it is string {
+  return isString(it) && number.test(it);
+}
+export function isHexString(it: unknown): it is string {
+  return isString(it) && hex.test(it);
+}
+export function isBase64String(it: unknown): it is string {
   return isString(it) && base64.test(it);
 }
 export function isSymbol(it: unknown): it is symbol {
@@ -63,16 +70,9 @@ export function isSet<K = any>(it: unknown): it is Set<K> {
 export function isWeakSet<K extends object = object>(it: unknown): it is WeakSet<K> {
   return it instanceof WeakSet;
 }
-/**
- * is it defined
- * @note NaN and Invalid Date is undefined
- */
 export function isDefined<T>(it: T | null | undefined): it is T {
   return typeof it === 'number' || it instanceof Date ? !isNaN(+it) : null != it;
 }
-/**
- * @note Invalid Date is NOT a Date
- */
 export function isDate(it: unknown): it is Date {
   return it instanceof Date && !isNaN(+it);
 }
@@ -112,7 +112,15 @@ export function ifAll(input: Is<any>[]) {
   return (it: unknown) => input.every(is => is(it));
 };
 
-export const isKey = ifAny([isString, isNumber, isSymbol]);
+export function isKey(it: unknown): it is string | number | symbol {
+  switch (typeof it) {
+    case 'string':
+    case 'number':
+    case 'string':
+      return true;
+    default: return false;
+  }
+}
 
 export function isEqualTo<T>(it: T) {
   return (that: unknown): that is T => that === it;
@@ -130,11 +138,6 @@ export function isInstanceOf<T>(it: new (...args: any[]) => T) {
 export function isArrayOf<T>(is: (it: unknown) => it is T) {
   return (it: unknown): it is T[] => isArray(it) && it.every(is);
 };
-/**
- * 
- * @param is guard function
- * @note objects witout any keys is Record<any, never>; Array<string> is a Record<any, string>
- */
 export function isRecordOf<T>(is: (it: unknown) => it is T) {
   return (it: unknown): it is Record<string | number | symbol, T> => {
     const values = isObject(it) ? Object.values(it) : [];
@@ -146,12 +149,12 @@ export type Shape<T extends Record<PropertyKey, any>> = {
   [K in keyof T]-?: Is<T[K]>
 }
 
-export function isLike<T extends Record<PropertyKey, any>>(shape: Shape<T>) {
+export function isLike<T extends Record<PropertyKey, any>>(it: Shape<T>) {
   const conditions: ((input: any) => any)[] = [];
-  for (const key of Reflect.ownKeys(shape)) {
-    const is = Reflect.get(shape, key);
+  for (const key of Reflect.ownKeys(it)) {
+    const is = Reflect.get(it, key);
     if (isFunction(is)) { conditions.push(it => isProperty(it, key) && is(it[key])) }
     else throw new TypeError(`guard ${String(key)} must be a function, got ${typeof is}`);
   }
-  return (it: unknown): it is Pick<T, keyof T> => isObject(it) && conditions.every(is => is(it));
+  return (that: unknown): that is Pick<T, keyof T> => isObject(that) && conditions.every(is => is(that));
 };
