@@ -48,7 +48,6 @@ export function isSymbol(it: unknown): it is symbol {
 export function isUndefined(it: unknown): it is undefined {
 	return typeof it === 'undefined'
 }
-
 /**
  * always false
  */

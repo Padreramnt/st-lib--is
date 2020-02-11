@@ -7,7 +7,7 @@
 			"ES2020"
 		],
 		"declaration": true,
-		"sourceMap": true,
+		"sourceMap": false,
 		"rootDir": "./src",
 		"outDir": "./lib",
 		"importHelpers": true,
@@ -24,6 +24,8 @@
 		"noImplicitReturns": true,
 		"noFallthroughCasesInSwitch": true,
 		"moduleResolution": "node",
+		"removeComments": false,
+		"pretty": true,
 		"esModuleInterop": true
 	},
 	"include": [
