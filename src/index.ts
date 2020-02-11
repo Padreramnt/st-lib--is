@@ -1,160 +1,135 @@
-export type Is<T> = (it: unknown) => it is T;
+const base64 = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/
+const number = /^[+-]?\d+(?:\.\d*)?(?:e[+-]?\d+)?$/i
+const hex = /^[\dabcdef]*$/i
+const hasIteratorMethod = has(Symbol.iterator, isFunction)
+const hasAsyncIteratorMethod = has(Symbol.asyncIterator, isFunction)
+const hasLengthNumber = has('length', isNumber)
+const hasThenMethod = has('then', isFunction)
 
-const base64 = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/;
-const number = /^[+-]?\d+(?:\.\d+)?(?:e[+-]?\d+)?$/;
-const hex = /^[\dabcdef]+$/i;
-const hasIteratorFunction = has(Symbol.iterator, isFunction);
-const hasAsyncIteratorFunction = has(Symbol.asyncIterator, isFunction);
-const hasLengthNumber = has('length', isNumber);
-
-export function isProperty(it: unknown, key: unknown) {
-  return isKey(key) && (
-    (typeof it === 'object' && null != it && key in it)
-    || (null != it && Object.prototype.hasOwnProperty.call(it, key))
-  );
-}
-
-export function has<K extends string | number | symbol, T = unknown>(key: K, is?: Is<T>) {
-  return (it: any): it is Record<K, T> => {
-    return isProperty(it, key) && ((typeof is !== 'function') || is(it[key]));
-  };
-};
 export function isNull(it: unknown): it is null {
-  return it === null;
+	return it === null
 }
 export function isBigInt(it: unknown): it is bigint {
-  return typeof it === 'bigint';
+	return typeof it === 'bigint'
 }
 export function isBoolean(it: unknown): it is boolean {
-  return typeof it === 'boolean';
+	return typeof it === 'boolean'
 }
-export function isFunction(it: unknown): it is ((...args: any[]) => any) {
-  return typeof it === 'function';
+export function isFunction(it: unknown): it is (...args: any[]) => any {
+	return typeof it === 'function'
+}
+export function isConstructor(it: unknown): it is new (...args: any[]) => any {
+	return typeof it === 'function'
 }
 export function isNumber(it: unknown): it is number {
-  return typeof it === 'number' && !isNaN(it);
+	return (typeof it === 'number' || it instanceof Number) && !isNaN(+it)
 }
 export function isObject(it: unknown): it is object {
-  return typeof it === 'object' && null != it;
+	return typeof it === 'object' && null != it
+}
+export function isRecord(it: unknown): it is Record<keyof any, any> {
+	return isObject(it)
 }
 export function isString(it: unknown): it is string {
-  return typeof it === 'string';
+	return typeof it === 'string' || it instanceof String
 }
 export function isNumberString(it: unknown): it is string {
-  return isString(it) && number.test(it);
+	return isString(it) && number.test(it)
 }
 export function isHexString(it: unknown): it is string {
-  return isString(it) && hex.test(it);
+	return isString(it) && hex.test(it)
 }
 export function isBase64String(it: unknown): it is string {
-  return isString(it) && base64.test(it);
+	return isString(it) && base64.test(it)
 }
 export function isSymbol(it: unknown): it is symbol {
-  return typeof it === 'symbol';
+	return typeof it === 'symbol'
 }
 export function isUndefined(it: unknown): it is undefined {
-  return typeof it === 'undefined';
+	return typeof it === 'undefined'
 }
-export function isPromise<T = any>(it: unknown): it is Promise<T> {
-  return it instanceof Promise;
+
+/**
+ * always false
+ */
+export function isAny<T>(it: unknown): it is T
+export function isAny() {
+	return false
 }
-export function isMap<K = any, V = any>(it: unknown): it is Map<K, V> {
-  return it instanceof Map;
+
+export function has<K extends keyof any, T = unknown>(key: K, is?: (it: unknown) => it is T): <P>(it: P) => it is P & Record<K, T>
+export function has<K extends keyof any, T = unknown>(key: K, is?: (it: unknown) => it is T) {
+	return (it: any): it is any => {
+		return typeof it === 'object' && null != it && key in it && ((typeof is !== 'function') || is(it[key]))
+	}
 }
-export function isWeakMap<K extends object = object, V = any>(it: unknown): it is WeakMap<K, V> {
-  return it instanceof WeakMap;
+
+export function isNot<T>(type: (it: unknown) => it is T) {
+	return <S>(that: S | T): that is S => !type(that)
 }
-export function isSet<K = any>(it: unknown): it is Set<K> {
-  return it instanceof Set;
-}
-export function isWeakSet<K extends object = object>(it: unknown): it is WeakSet<K> {
-  return it instanceof WeakSet;
-}
+
 export function isDefined<T>(it: T | null | undefined): it is T {
-  return typeof it === 'number' || it instanceof Date ? !isNaN(+it) : null != it;
+	return typeof it === 'number' || it instanceof Number || it instanceof Date ? !isNaN(+it) : null != it
 }
+
+export function isPromise<T = any>(it: unknown): it is PromiseLike<T> {
+	return hasThenMethod(it)
+}
+
 export function isDate(it: unknown): it is Date {
-  return it instanceof Date && !isNaN(+it);
-}
-export function isRegExp(it: unknown): it is RegExp {
-  return it instanceof RegExp;
+	return it instanceof Date && !isNaN(+it)
 }
 export function isArray<T = any>(it: unknown): it is T[] {
-  return Array.isArray(it);
+	return Array.isArray(it)
 }
 export function isIterable<T = any>(it: unknown): it is Iterable<T> {
-  return hasIteratorFunction(it);
+	return hasIteratorMethod(it)
 }
 export function isAsyncIterable<T = any>(it: unknown): it is AsyncIterable<T> {
-  return hasAsyncIteratorFunction(it);
+	return hasAsyncIteratorMethod(it)
 }
 export function isArrayLike<T = any>(it: unknown): it is ArrayLike<T> {
-  return hasLengthNumber(it);
+	return hasLengthNumber(it)
 }
 
-export function ifAny<a, b, c, d, e, f, g>(input: [Is<a>, Is<b>, Is<c>, Is<d>, Is<e>, Is<f>, Is<g>,]): Is<a | b | c | d | e | f | g>;
-export function ifAny<a, b, c, d, e, f>(input: [Is<a>, Is<b>, Is<c>, Is<d>, Is<e>, Is<f>,]): Is<a | b | c | d | e | f>;
-export function ifAny<a, b, c, d, e>(input: [Is<a>, Is<b>, Is<c>, Is<d>, Is<e>,]): Is<a | b | c | d | e>;
-export function ifAny<a, b, c, d>(input: [Is<a>, Is<b>, Is<c>, Is<d>,]): Is<a | b | c | d>;
-export function ifAny<a, b, c>(input: [Is<a>, Is<b>, Is<c>,]): Is<a | b | c>;
-export function ifAny<a, b>(input: [Is<a>, Is<b>,]): Is<a | b>;
-export function ifAny(input: Is<any>[]) {
-  return (it: unknown) => input.some(is => is(it));
-};
-
-export function ifAll<a, b, c, d, e, f, g>(input: [Is<a>, Is<b>, Is<c>, Is<d>, Is<e>, Is<f>, Is<g>,]): Is<a & b & c & d & e & f & g>;
-export function ifAll<a, b, c, d, e, f>(input: [Is<a>, Is<b>, Is<c>, Is<d>, Is<e>, Is<f>,]): Is<a & b & c & d & e & f>;
-export function ifAll<a, b, c, d, e>(input: [Is<a>, Is<b>, Is<c>, Is<d>, Is<e>,]): Is<a & b & c & d & e>;
-export function ifAll<a, b, c, d>(input: [Is<a>, Is<b>, Is<c>, Is<d>,]): Is<a & b & c & d>;
-export function ifAll<a, b, c>(input: [Is<a>, Is<b>, Is<c>,]): Is<a & b & c>;
-export function ifAll<a, b>(input: [Is<a>, Is<b>,]): Is<a & b>;
-export function ifAll(input: Is<any>[]) {
-  return (it: unknown) => input.every(is => is(it));
-};
-
-export function isKey(it: unknown): it is string | number | symbol {
-  switch (typeof it) {
-    case 'string':
-    case 'number':
-    case 'string':
-      return true;
-    default: return false;
-  }
+export function isKey(it: unknown): it is keyof any {
+	return isString(it) || isNumber(it) || typeof it === 'symbol'
 }
 
+export function isEqualTo<T extends boolean | keyof any>(it: T): (it: unknown) => T
+export function isEqualTo<T>(it: T): (it: unknown) => T
 export function isEqualTo<T>(it: T) {
-  return (that: unknown): that is T => that === it;
+	return (that: unknown): that is T => that === it
 }
 
+export function isOneOf<T extends boolean | keyof any>(them: T[]): (it: unknown) => T
+export function isOneOf<T>(them: T[]): (it: unknown) => T
 export function isOneOf<T>(them: T[]) {
-  return (that: any): that is T => them.includes(that);
-};
-export function isKeyOf<T>(it: T) {
-  return (that: any): that is keyof T => isProperty(it, that);
-};
-export function isInstanceOf<T>(it: new (...args: any[]) => T) {
-  return (that: unknown): that is T => that instanceof it;
-};
-export function isArrayOf<T>(is: (it: unknown) => it is T) {
-  return (it: unknown): it is T[] => isArray(it) && it.every(is);
-};
-export function isRecordOf<T>(is: (it: unknown) => it is T) {
-  return (it: unknown): it is Record<string | number | symbol, T> => {
-    const values = isObject(it) ? Object.values(it) : [];
-    return values.length > 0 && values.every(is);
-  };
-};
-
-export type Shape<T extends Record<PropertyKey, any>> = {
-  [K in keyof T]-?: Is<T[K]>
+	return (that: any): that is T => them.includes(that)
+}
+export function isKeyOf<T extends object>(it: T) {
+	return (key: any): key is keyof T => typeof it === 'object' && null != it && key in it
+}
+export function isInstanceOf<T>(type: new (...args: any[]) => T) {
+	return (that: unknown): that is T => that instanceof type
+}
+export function isArrayOf<T>(type: (it: unknown) => it is T) {
+	return (it: unknown): it is T[] => isArray(it) && it.every(type)
+}
+export function isRecordOf<T>(type: (it: unknown) => it is T) {
+	return (it: unknown): it is Record<keyof any, T> => {
+		return isRecord(it) && Reflect.ownKeys(it).every(k => type(Reflect.get(it, k)))
+	}
 }
 
-export function isLike<T extends Record<PropertyKey, any>>(it: Shape<T>) {
-  const conditions: ((input: any) => any)[] = [];
-  for (const key of Reflect.ownKeys(it)) {
-    const is = Reflect.get(it, key);
-    if (isFunction(is)) { conditions.push(it => isProperty(it, key) && is(it[key])) }
-    else throw new TypeError(`guard ${String(key)} must be a function, got ${typeof is}`);
-  }
-  return (that: unknown): that is Pick<T, keyof T> => isObject(that) && conditions.every(is => is(that));
-};
+export function isSimilarTo<T extends object>(it: { [K in keyof T]-?: (it: unknown) => it is T[K] }) {
+	return (that: unknown): that is Pick<T, keyof T> => {
+		return isObject(that) && Reflect.ownKeys(it).every(k => Reflect.get(it, k)(Reflect.get(that, k)))
+	}
+}
+
+export function isCallable<A extends any[], T>(constructor: true): (it: unknown) => it is new (...args: A) => T
+export function isCallable<A extends any[], T>(): (it: unknown) => it is (...args: A) => T
+export function isCallable(): any {
+	return isFunction
+}

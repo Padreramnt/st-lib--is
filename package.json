@@ -1,28 +1,32 @@
 {
-  "name": "is-ts",
-  "version": "1.0.0",
-  "description": "typescript guard tools",
-  "main": "lib/index.js",
-  "module": "lib/index.mjs",
-  "author": "padreramnt",
-  "license": "MIT",
-  "scripts": {
-    "start:tsc": "tsc",
-    "prebuild": "rm -rf ./lib",
-    "build": "tsc -p tsconfig.json --emitDeclarationOnly&&rollup -c",
-    "pretest": "yarn build",
-    "test": "node ./test.js",
-    "prepublishOnly": "npm test&&rm -rf ./lib&&tsc -p prod.tsconfig.json&&rollup -c"
-  },
-  "devDependencies": {
-    "rollup": "^1.14.6",
-    "rollup-plugin-typescript": "^1.0.1",
-    "typescript": "^3.5.1"
-  },
-  "dependencies": {
-    "tslib": "^1.9.3"
-  },
-  "files": [
-    "lib/**"
-  ]
+	"name": "@st-lib/is",
+	"version": "1.0.0",
+	"description": "typescript guard tools",
+	"main": "lib/index.js",
+	"module": "lib/index.js",
+	"types": "lib/index.d.ts",
+	"author": "padreramnt",
+	"license": "MIT",
+	"scripts": {
+		"start:tsc": "tsc",
+		"prebuild": "rimraf -rf ./lib",
+		"build": "tsc -p ./tsconfig.json",
+		"test": "tsc -p ./tsconfig.json --noEmit",
+		"prepublishOnly": "npm run build"
+	},
+	"devDependencies": {
+		"rimraf": "^3.0.1",
+		"typescript": "^3.5.1"
+	},
+	"dependencies": {
+		"tslib": "^1.9.3"
+	},
+	"keywords": [
+		"typescript",
+		"ts",
+		"guard"
+	],
+	"files": [
+		"lib/**"
+	]
 }
