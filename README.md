@@ -1,6 +1,6 @@
 # typescript guard tools
 
-> ESNext module, please use webpack / rollup / parcel / babel / etc.
+> ESNext module, please use [webpack](https://webpack.js.org/) / [rollup](https://rollupjs.org/guide/en/) / [parcel](https://parceljs.org/) / etc.
 
 ## typeof var guards
 ```ts
