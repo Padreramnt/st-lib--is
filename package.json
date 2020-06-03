@@ -12,7 +12,9 @@
 		"prebuild": "rimraf -rf ./lib",
 		"build": "tsc -p ./tsconfig.json",
 		"test": "tsc -p ./tsconfig.json --noEmit",
-		"prepublishOnly": "npm run build"
+		"prepublishOnly": "npm run build",
+		"prestart": "rimraf -rf ./lib",
+		"start": "tsc -p ./tsconfig.json -w"
 	},
 	"devDependencies": {
 		"rimraf": "^3.0.1",
@@ -27,6 +29,6 @@
 		"guard"
 	],
 	"files": [
-		"lib/**"
+		"lib"
 	]
 }
