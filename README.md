@@ -32,11 +32,11 @@ export declare function isPromise<T = any>(it: unknown): it is PromiseLike<T>;
 // reject invalid date object
 export declare function isDate(it: unknown): it is Date;
 // alias for Yoda notation
-export declare function isEqualTo<T extends boolean | keyof any>(it: T): (it: unknown) => T;
-export declare function isEqualTo<T>(it: T): (it: unknown) => T;
+export declare function isEqualTo<T extends boolean | keyof any>(it: T): (it: unknown) => it is T;
+export declare function isEqualTo<T>(it: T): (it: unknown) => it is T;
 // enumeration guards
-export declare function isOneOf<T extends boolean | keyof any>(them: T[]): (it: unknown) => T;
-export declare function isOneOf<T>(them: T[]): (it: unknown) => T;
+export declare function isOneOf<T extends boolean | keyof any>(them: T[]): (it: unknown) => it is T;
+export declare function isOneOf<T>(them: T[]): (it: unknown) => it is T;
 
 // alias for incanceof operator
 export declare function isInstanceOf<T>(type: new (...args: any[]) => T): (that: unknown) => that is T;
