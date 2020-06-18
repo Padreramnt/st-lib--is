@@ -101,8 +101,8 @@ export function isEqualTo<T>(it: T) {
 	return (that: unknown): that is T => Object.is(it, that)
 }
 
-export function isOneOf<T extends boolean | keyof any>(them: T[]): (it: unknown) => T
-export function isOneOf<T>(them: T[]): (it: unknown) => T
+export function isOneOf<T extends boolean | keyof any>(them: T[]): (it: unknown) => it is T
+export function isOneOf<T>(them: T[]): (it: unknown) => it is T
 export function isOneOf<T>(them: T[]) {
 	return (that: any): that is T => them.includes(that)
 }
