@@ -95,10 +95,10 @@ export function isKey(it: unknown): it is keyof any {
 	return isString(it) || isNumber(it) || typeof it === 'symbol'
 }
 
-export function isEqualTo<T extends boolean | keyof any>(it: T): (it: unknown) => T
-export function isEqualTo<T>(it: T): (it: unknown) => T
+export function isEqualTo<T extends boolean | keyof any>(it: T): (it: unknown) => it is T
+export function isEqualTo<T>(it: T): (it: unknown) => it is T
 export function isEqualTo<T>(it: T) {
-	return (that: unknown): that is T => that === it
+	return (that: unknown): that is T => Object.is(it, that)
 }
 
 export function isOneOf<T extends boolean | keyof any>(them: T[]): (it: unknown) => T
@@ -131,4 +131,193 @@ export function isCallable<A extends any[], T>(constructor: true): (it: unknown)
 export function isCallable<A extends any[], T>(): (it: unknown) => it is (...args: A) => T
 export function isCallable(): any {
 	return isFunction
+}
+
+declare var window: any
+declare var document: any
+
+const isDocument = isSimilarTo({
+	nodeType: isEqualTo(9),
+})
+
+export const isBrowser = (() => {
+	try {
+		return isObject(window) && isDocument(document)
+	} catch (_) {
+		return false
+	}
+})()
+
+declare var process: any
+
+const isProcess = isSimilarTo({
+	versions: isSimilarTo({
+		node: isString
+	})
+})
+
+export const isNodeJS = (() => {
+	try {
+		return isProcess(process)
+	} catch (_) {
+		return false
+	}
+})()
+
+export function or<T1, T2>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+): (it: unknown) => it is T1 | T2
+export function or<T1, T2, T3>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+): (it: unknown) => it is T1 | T2 | T3
+export function or<T1, T2, T3, T4>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+	f4: (it: unknown) => it is T4,
+): (it: unknown) => it is T1 | T2 | T3 | T4
+export function or<T1, T2, T3, T4, T5>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+	f4: (it: unknown) => it is T4,
+	f5: (it: unknown) => it is T5,
+): (it: unknown) => it is T1 | T2 | T3 | T4 | T5
+export function or<T1, T2, T3, T4, T5, T6>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+	f4: (it: unknown) => it is T4,
+	f5: (it: unknown) => it is T5,
+	f6: (it: unknown) => it is T6,
+): (it: unknown) => it is T1 | T2 | T3 | T4 | T5 | T6
+export function or<T1, T2, T3, T4, T5, T6, T7>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+	f4: (it: unknown) => it is T4,
+	f5: (it: unknown) => it is T5,
+	f6: (it: unknown) => it is T6,
+	f7: (it: unknown) => it is T7,
+): (it: unknown) => it is T1 | T2 | T3 | T4 | T5 | T6 | T7
+export function or<T1, T2, T3, T4, T5, T6, T7, T8>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+	f4: (it: unknown) => it is T4,
+	f5: (it: unknown) => it is T5,
+	f6: (it: unknown) => it is T6,
+	f7: (it: unknown) => it is T7,
+	f8: (it: unknown) => it is T8,
+): (it: unknown) => it is T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8
+export function or<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+	f4: (it: unknown) => it is T4,
+	f5: (it: unknown) => it is T5,
+	f6: (it: unknown) => it is T6,
+	f7: (it: unknown) => it is T7,
+	f8: (it: unknown) => it is T8,
+	f9: (it: unknown) => it is T9,
+): (it: unknown) => it is T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8 | T9
+export function or<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+	f4: (it: unknown) => it is T4,
+	f5: (it: unknown) => it is T5,
+	f6: (it: unknown) => it is T6,
+	f7: (it: unknown) => it is T7,
+	f8: (it: unknown) => it is T8,
+	f9: (it: unknown) => it is T9,
+	f10: (it: unknown) => it is T10,
+): (it: unknown) => it is T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8 | T9 | T10
+export function or(...args: ((it: any) => any)[]) {
+	return (it: unknown) => {
+		for (const arg of args) if (arg(it)) return true
+		return false
+	}
+}
+
+export function and<T1, T2>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+): (it: unknown) => it is T1 & T2
+export function and<T1, T2, T3>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+): (it: unknown) => it is T1 & T2 & T3
+export function and<T1, T2, T3, T4>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+	f4: (it: unknown) => it is T4,
+): (it: unknown) => it is T1 & T2 & T3 & T4
+export function and<T1, T2, T3, T4, T5>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+	f4: (it: unknown) => it is T4,
+	f5: (it: unknown) => it is T5,
+): (it: unknown) => it is T1 & T2 & T3 & T4 & T5
+export function and<T1, T2, T3, T4, T5, T6>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+	f4: (it: unknown) => it is T4,
+	f5: (it: unknown) => it is T5,
+	f6: (it: unknown) => it is T6,
+): (it: unknown) => it is T1 & T2 & T3 & T4 & T5 & T6
+export function and<T1, T2, T3, T4, T5, T6, T7>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+	f4: (it: unknown) => it is T4,
+	f5: (it: unknown) => it is T5,
+	f6: (it: unknown) => it is T6,
+	f7: (it: unknown) => it is T7,
+): (it: unknown) => it is T1 & T2 & T3 & T4 & T5 & T6 & T7
+export function and<T1, T2, T3, T4, T5, T6, T7, T8>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+	f4: (it: unknown) => it is T4,
+	f5: (it: unknown) => it is T5,
+	f6: (it: unknown) => it is T6,
+	f7: (it: unknown) => it is T7,
+	f8: (it: unknown) => it is T8,
+): (it: unknown) => it is T1 & T2 & T3 & T4 & T5 & T6 & T7 & T8
+export function and<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+	f4: (it: unknown) => it is T4,
+	f5: (it: unknown) => it is T5,
+	f6: (it: unknown) => it is T6,
+	f7: (it: unknown) => it is T7,
+	f8: (it: unknown) => it is T8,
+	f9: (it: unknown) => it is T9,
+): (it: unknown) => it is T1 & T2 & T3 & T4 & T5 & T6 & T7 & T8 & T9
+export function and<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+	f4: (it: unknown) => it is T4,
+	f5: (it: unknown) => it is T5,
+	f6: (it: unknown) => it is T6,
+	f7: (it: unknown) => it is T7,
+	f8: (it: unknown) => it is T8,
+	f9: (it: unknown) => it is T9,
+	f10: (it: unknown) => it is T10,
+): (it: unknown) => it is T1 & T2 & T3 & T4 & T5 & T6 & T7 & T8 & T9 & T10
+export function and(...args: ((it: any) => any)[]) {
+	return (it: unknown) => {
+		for (const arg of args) if (!arg(it)) return false
+		return true
+	}
 }

@@ -2,6 +2,8 @@
 
 > ESNext module, please use [webpack](https://webpack.js.org/) / [rollup](https://rollupjs.org/guide/en/) / [parcel](https://parceljs.org/) / etc.
 
+> UPDATE: `isEqualTo` type guard now use `Object.is` instead of `===`.
+
 ## typeof var guards
 ```ts
 export declare function isNull(it: unknown): it is null;
@@ -75,7 +77,183 @@ export declare function isSimilarTo<T extends object>(it: {
 }): (that: unknown) => that is Pick<T, keyof T>;
 ```
 
-## other
+## combinators
+### or
+Up to 10 type guards are supported.
+```ts
+export declare function or<T1, T2>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+): (it: unknown) => it is T1 | T2
+export declare function or<T1, T2, T3>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+): (it: unknown) => it is T1 | T2 | T3
+export declare function or<T1, T2, T3, T4>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+	f4: (it: unknown) => it is T4,
+): (it: unknown) => it is T1 | T2 | T3 | T4
+export declare function or<T1, T2, T3, T4, T5>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+	f4: (it: unknown) => it is T4,
+	f5: (it: unknown) => it is T5,
+): (it: unknown) => it is T1 | T2 | T3 | T4 | T5
+export declare function or<T1, T2, T3, T4, T5, T6>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+	f4: (it: unknown) => it is T4,
+	f5: (it: unknown) => it is T5,
+	f6: (it: unknown) => it is T6,
+): (it: unknown) => it is T1 | T2 | T3 | T4 | T5 | T6
+export declare function or<T1, T2, T3, T4, T5, T6, T7>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+	f4: (it: unknown) => it is T4,
+	f5: (it: unknown) => it is T5,
+	f6: (it: unknown) => it is T6,
+	f7: (it: unknown) => it is T7,
+): (it: unknown) => it is T1 | T2 | T3 | T4 | T5 | T6 | T7
+export declare function or<T1, T2, T3, T4, T5, T6, T7, T8>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+	f4: (it: unknown) => it is T4,
+	f5: (it: unknown) => it is T5,
+	f6: (it: unknown) => it is T6,
+	f7: (it: unknown) => it is T7,
+	f8: (it: unknown) => it is T8,
+): (it: unknown) => it is T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8
+export declare function or<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+	f4: (it: unknown) => it is T4,
+	f5: (it: unknown) => it is T5,
+	f6: (it: unknown) => it is T6,
+	f7: (it: unknown) => it is T7,
+	f8: (it: unknown) => it is T8,
+	f9: (it: unknown) => it is T9,
+): (it: unknown) => it is T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8 | T9
+export declare function or<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+	f4: (it: unknown) => it is T4,
+	f5: (it: unknown) => it is T5,
+	f6: (it: unknown) => it is T6,
+	f7: (it: unknown) => it is T7,
+	f8: (it: unknown) => it is T8,
+	f9: (it: unknown) => it is T9,
+	f10: (it: unknown) => it is T10,
+): (it: unknown) => it is T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8 | T9 | T10
+```
+Example:
+```ts
+export const isNullableString = or(isString, isNull)
+```
+
+### and
+Up to 10 type guards are supported.
+```ts
+export declare function and<T1, T2>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+): (it: unknown) => it is T1 & T2
+export declare function and<T1, T2, T3>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+): (it: unknown) => it is T1 & T2 & T3
+export declare function and<T1, T2, T3, T4>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+	f4: (it: unknown) => it is T4,
+): (it: unknown) => it is T1 & T2 & T3 & T4
+export declare function and<T1, T2, T3, T4, T5>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+	f4: (it: unknown) => it is T4,
+	f5: (it: unknown) => it is T5,
+): (it: unknown) => it is T1 & T2 & T3 & T4 & T5
+export declare function and<T1, T2, T3, T4, T5, T6>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+	f4: (it: unknown) => it is T4,
+	f5: (it: unknown) => it is T5,
+	f6: (it: unknown) => it is T6,
+): (it: unknown) => it is T1 & T2 & T3 & T4 & T5 & T6
+export declare function and<T1, T2, T3, T4, T5, T6, T7>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+	f4: (it: unknown) => it is T4,
+	f5: (it: unknown) => it is T5,
+	f6: (it: unknown) => it is T6,
+	f7: (it: unknown) => it is T7,
+): (it: unknown) => it is T1 & T2 & T3 & T4 & T5 & T6 & T7
+export declare function and<T1, T2, T3, T4, T5, T6, T7, T8>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+	f4: (it: unknown) => it is T4,
+	f5: (it: unknown) => it is T5,
+	f6: (it: unknown) => it is T6,
+	f7: (it: unknown) => it is T7,
+	f8: (it: unknown) => it is T8,
+): (it: unknown) => it is T1 & T2 & T3 & T4 & T5 & T6 & T7 & T8
+export declare function and<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+	f4: (it: unknown) => it is T4,
+	f5: (it: unknown) => it is T5,
+	f6: (it: unknown) => it is T6,
+	f7: (it: unknown) => it is T7,
+	f8: (it: unknown) => it is T8,
+	f9: (it: unknown) => it is T9,
+): (it: unknown) => it is T1 & T2 & T3 & T4 & T5 & T6 & T7 & T8 & T9
+export declare function and<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
+	f1: (it: unknown) => it is T1,
+	f2: (it: unknown) => it is T2,
+	f3: (it: unknown) => it is T3,
+	f4: (it: unknown) => it is T4,
+	f5: (it: unknown) => it is T5,
+	f6: (it: unknown) => it is T6,
+	f7: (it: unknown) => it is T7,
+	f8: (it: unknown) => it is T8,
+	f9: (it: unknown) => it is T9,
+	f10: (it: unknown) => it is T10,
+): (it: unknown) => it is T1 & T2 & T3 & T4 & T5 & T6 & T7 & T8 & T9 & T10
+```
+Example:
+```ts
+export const isSomeRecordType = isSimilarTo({
+	str: isString,
+	method: isFunction,
+})
+export const isAnotherRecordType = isSimilarTo({
+	num: isNumber,
+	map: isInstanceOf(Map),
+})
+export const isMixOfRecordTypes = and(isSomeRecordType, isAnotherRecordType)
+```
+### not
 ```ts
 export declare function isNot<T>(type: (it: unknown) => it is T): <S>(that: T | S) => that is S;
+```
+
+## other
+```ts
+export declare const isBrowser: boolean;
+export declare const isNodeJS: boolean;
 ```

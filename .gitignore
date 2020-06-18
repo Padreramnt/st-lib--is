@@ -1,6 +1,7 @@
 # Output
 lib
 temp
+temp.*
 dist
 
 # Logs
