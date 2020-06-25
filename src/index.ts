@@ -140,13 +140,15 @@ const isDocument = isSimilarTo({
 	nodeType: isEqualTo(9),
 })
 
-export const isBrowser = (() => {
+let _isBrowser: boolean
+export function isBrowser() {
 	try {
-		return isObject(window) && isDocument(document)
+		if (null == _isBrowser) _isBrowser = isObject(window) && isDocument(document)
+		return _isBrowser
 	} catch (_) {
 		return false
 	}
-})()
+}
 
 declare var process: any
 
@@ -155,14 +157,15 @@ const isProcess = isSimilarTo({
 		node: isString
 	})
 })
-
-export const isNodeJS = (() => {
+let _isNodeJS: boolean
+export function isNodeJS() {
 	try {
-		return isProcess(process)
+		if (null == _isNodeJS) _isNodeJS = isProcess(process)
+		return _isNodeJS
 	} catch (_) {
 		return false
 	}
-})()
+}
 
 export function or<T1, T2>(
 	f1: (it: unknown) => it is T1,

@@ -3,6 +3,7 @@
 > ESNext module, please use [webpack](https://webpack.js.org/) / [rollup](https://rollupjs.org/guide/en/) / [parcel](https://parceljs.org/) / etc.
 
 > UPDATE: `isEqualTo` type guard now use `Object.is` instead of `===`.
+> UPDATE: the `isBrowser` &` isNodeJS` constants are now functions due to incorrect `rollup` tree shaking of unused pre-calculated constants.
 
 ## typeof var guards
 ```ts
@@ -254,6 +255,6 @@ export declare function isNot<T>(type: (it: unknown) => it is T): <S>(that: T | 
 
 ## other
 ```ts
-export declare const isBrowser: boolean;
-export declare const isNodeJS: boolean;
+export declare function isBrowser(): boolean;
+export declare function isNodeJS(): boolean;
 ```
