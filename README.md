@@ -48,6 +48,7 @@ export declare function isInstanceOf<T>(type: new (...args: any[]) => T): (that:
 ## string format guards
 ```ts
 export declare function isNumberString(it: unknown): it is string;
+export declare function isPartialNumberString(it: unknown): it is string;
 export declare function isHexString(it: unknown): it is string;
 export declare function isBase64String(it: unknown): it is string;
 ```

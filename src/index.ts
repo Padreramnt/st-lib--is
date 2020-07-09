@@ -1,6 +1,7 @@
-const base64 = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/
-const number = /^[+-]?\d+(?:\.\d*)?(?:e[+-]?\d+)?$/i
-const hex = /^[\dabcdef]*$/i
+export const base64Re = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/
+export const numberRe = /^([+-])?(\d+)(?:\.(\d+)?)?(?:[eE]([+-])?(\d+)?)?$/
+export const partialNumberRe = /^\s*([+-])?(\d+)?(?:\.(\d+)?)?(?:[eE]([+-])?(\d+)?)?\s*$/
+export const hexRe = /^[\dabcdef]*$/i
 const hasIteratorMethod = has(Symbol.iterator, isFunction)
 const hasAsyncIteratorMethod = has(Symbol.asyncIterator, isFunction)
 const hasLengthNumber = has('length', isNumber)
@@ -34,13 +35,16 @@ export function isString(it: unknown): it is string {
 	return typeof it === 'string' || it instanceof String
 }
 export function isNumberString(it: unknown): it is string {
-	return isString(it) && number.test(it)
+	return isString(it) && numberRe.test(it)
+}
+export function isPartialNumberString(it: unknown): it is string {
+	return isString(it) && partialNumberRe.test(it)
 }
 export function isHexString(it: unknown): it is string {
-	return isString(it) && hex.test(it)
+	return isString(it) && hexRe.test(it)
 }
 export function isBase64String(it: unknown): it is string {
-	return isString(it) && base64.test(it)
+	return isString(it) && base64Re.test(it)
 }
 export function isSymbol(it: unknown): it is symbol {
 	return typeof it === 'symbol'
